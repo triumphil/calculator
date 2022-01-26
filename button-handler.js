@@ -29,33 +29,28 @@ function evaluateResultStr(str){
 }
 
 function buttonController(event){
-    if (!isNaN(event.target.innerText)){
+    let inputChar = event.target.innerText;
+    if (!isNaN(inputChar)){
         if (resultStr.innerText === "0"){
-            resultStr.innerText = event.target.innerText;
+            resultStr.innerText = inputChar;
         }
         else {
-            resultStr.innerText += event.target.innerText;
+            resultStr.innerText += inputChar;
         }
-    }
-    else if (event.target.innerText === document.querySelector(".clear").innerText) {
+    } else if (inputChar === document.querySelector(".clear").innerText) {
         resultStr.innerText = "0";
-    }
-    else if (event.target.innerText === document.querySelector(".back").innerText) {
+    } else if (inputChar === document.querySelector(".back").innerText) {
         resultStr.innerText = resultStr.innerText.slice(0,-1);
         if (resultStr.innerText === "") {
             resultStr.innerText = "0"
         }
-    }
-    else if (operators.includes(event.target.innerText)){ 
-        if (resultStr.innerText === "0"){
-            return;
-        }
+    } else if (operators.includes(inputChar)){ 
         if (operators.includes(resultStr.innerText.slice(-1))){
-            return
+            resultStr.innerText = resultStr.innerText.replace(resultStr.innerText.slice(-1), inputChar)
+        } else {
+            resultStr.innerText += inputChar;
         }
-        resultStr.innerText += event.target.innerText;
-    }
-    else if (event.target.innerText === "="){ 
+    } else if (inputChar === "="){ 
         evaluateResultStr(resultStr.innerText);
     }
 }
