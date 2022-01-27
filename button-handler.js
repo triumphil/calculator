@@ -1,4 +1,4 @@
-// TODO(spmartinelli) : add support for negative numbers
+// TODO(spmartinelli) : add support for neg numbers
 (function (){
     let resultStr = document.querySelector(".result-string");
     let operators = Array.from(document.querySelectorAll(".operator")).map(element => {
@@ -6,10 +6,10 @@
     })
 
     let mathFunctions = {
-        "+" : function (x, y) { return parseInt(x) + parseInt(y) },
-        "-" : function (x, y) { return parseInt(x) - parseInt(y) },
-        "×" : function (x, y) { return parseInt(x) * parseInt(y) },
-        "÷" : function (x, y) { return parseInt(x) / parseInt(y) }
+        "+" : function (x, y) { return parseFloat(x) + parseFloat(y) },
+        "-" : function (x, y) { return parseFloat(x) - parseFloat(y) },
+        "×" : function (x, y) { return parseFloat(x) * parseFloat(y) },
+        "÷" : function (x, y) { return parseFloat(x) / parseFloat(y) }
     }
         
     function evaluateResultStr(str) {
