@@ -74,10 +74,8 @@
                 tokens = tokens.map((t,i) => { 
                     if (i == tokens.length - 1) {
                         t.value = t.value.slice(0,-1);
-                        return t;
-                    } else {
-                        return t;
                     }
+                    return t;
                 }).filter(t => t.value.length);
                 break;
             case "=":
