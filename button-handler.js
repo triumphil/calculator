@@ -1,4 +1,3 @@
-// TODO(spmartinelli) : add support for neg numbers
 (function (){
     class Token {
         constructor(type, value) {
@@ -8,71 +7,19 @@
     }
 
     let resultStr = document.querySelector(".result-string");
-    let operators = Array.from(document.querySelectorAll(".operator")).map(element => {
-        return element.innerText;
-    })
     let tokens = [];
     let runningTotal = 0;
-    // token = {type: symbol/number, value: string}
-
     let mathFunctions = {
         "+" : function (x, y) { return parseFloat(x) + parseFloat(y) },
         "-" : function (x, y) { return parseFloat(x) - parseFloat(y) },
         "×" : function (x, y) { return parseFloat(x) * parseFloat(y) },
         "÷" : function (x, y) { return parseFloat(x) / parseFloat(y) }
     }
-        
-    function evaluateResultStr(str) {
-        let strOperands = str.match(/\d+/g);
-        let strOperators = str.match(/\D/g);
-        
-        for (let i; strOperators.length>0; ) {
-            if (strOperators.includes("×") || strOperators.includes("÷")) {
-                i = strOperators.findIndex(op => op === "×" || op === "÷")
-            } else if (strOperators.includes("+") || strOperators.includes("-")) {
-                i = strOperators.findIndex(op => op === "+" || op === "-")
-            }
-            let result = mathFunctions[strOperators[i]](strOperands[i],strOperands[i+1]);
-            runningTotal += result;
-            strOperators = strOperators.slice(0,i).concat(strOperators.slice(i+1))
-            strOperands = strOperands.slice(0,i).concat(`${result}`).concat(strOperands.slice(i+2))
-            resultStr.innerText = result
-        }
-    }
-
-    function buttonController(event) {
-        let inputChar = event.target.innerText;
-        if (!isNaN(inputChar)) {
-            if (resultStr.innerText === "0") {
-                resultStr.innerText = inputChar;
-            } else {
-                resultStr.innerText += inputChar;
-            }
-        } else if (inputChar === document.querySelector(".clear").innerText) {
-            resultStr.innerText = "0";
-        } else if (inputChar === document.querySelector(".back").innerText) {
-            resultStr.innerText = resultStr.innerText.slice(0,-1);
-            if (resultStr.innerText === "") {
-                resultStr.innerText = "0"
-            }
-        } else if (operators.includes(inputChar)) { 
-            if (operators.includes(resultStr.innerText.slice(-1))) {
-                resultStr.innerText = resultStr.innerText.replace(resultStr.innerText.slice(-1), inputChar)
-            } else {
-                resultStr.innerText += inputChar;
-            }
-        } else if (inputChar === "=") { 
-            evaluateResultStr(resultStr.innerText);
-        }
-    }
 
     function handleButtonClick(value){  
-        console.log("handle click top level ", tokens)
         if (isNaN(parseInt(value))) {
-            console.log("symbol here, ", value)
             handleSymbol(value);
         } else {
-            console.log("number here ",value)
             handleNumber(value);
         }
         reRender();
@@ -86,7 +33,6 @@
                 if (tokens.map(t => t.value).join("") == "0") {
                     tokens[tokens.length - 1] = new Token("number", value);
                 } else {
-                    console.log("here")
                     tokens[tokens.length - 1].value += value;
                 }
             } else {
@@ -96,31 +42,53 @@
     }
 
     function handleSymbol(value){
-        if (operators.includes(value)) {
-            if (value == "-") {
+        switch (value) {
+            case "-":
                 if (!tokens.length || tokens[tokens.length - 1].type == "symbol") {
                     tokens.push(new Token("number", value));
                 } else {
-                    tokens.push(new Token("symbol", value));
-                }
-            } else {
-                if (tokens.length) {
-                    if (tokens[tokens.length - 1].type == "number" && tokens[tokens.length - 1].value != "-" ) {
+                    if (tokens[tokens.length - 1].type == "number" && tokens[tokens.length - 1].value != "-") {
                         tokens.push(new Token("symbol", value));
+                    }
+                }
+                break;
+            case "+":
+            case "×":
+            case "÷":
+                if (tokens.length) {
+                    if (tokens[tokens.length - 1].type == "number") {
+                        if (tokens[tokens.length - 1].value != "-") {
+                            tokens.push(new Token("symbol", value));
+                        } 
                     } else {
                         if (tokens[tokens.length - 1].type == "symbol") {
                             tokens[tokens.length - 1] = new Token("symbol", value);
                         }
                     }
-                } 
-            }
-        } else if (value == "=") {
-            evaluateTokens();
+                }
+                break;
+            case "C":
+                tokens = [];
+                break;
+            case "←":
+                tokens = tokens.map((t,i) => { 
+                    if (i == tokens.length - 1) {
+                        t.value = t.value.slice(0,-1);
+                        return t;
+                    } else {
+                        return t;
+                    }
+                }).filter(t => t.value.length);
+                break;
+            case "=":
+                evaluateTokens();
+                break;
+            
         }
     }
 
     function reRender(){
-        resultStr.innerText = runningTotal || tokens.map(t => t.value).join("");
+        resultStr.innerText = tokens.map(t => t.value).join("") || "0";
     }
 
     function evaluateTokens() {
@@ -135,14 +103,13 @@
             } else if (operators.includes("+") || operators.includes("-")) {
                 i = operators.findIndex(op => op === "+" || op === "-")
             }
-            let result = mathFunctions[operators[i]](operands[i],operands[i+1]);
-            runningTotal = result;
-            console.log("result: ",result)
+            console.log(`Performing the [${operators[i]}] operation on the following operands: [${operands[i]}, ${operands[i+1]}]`)
+            runningTotal = mathFunctions[operators[i]](operands[i],operands[i+1]);
             operators = operators.slice(0,i).concat(operators.slice(i+1))
-            operands = operands.slice(0,i).concat(`${result}`).concat(operands.slice(i+2))
+            operands = operands.slice(0,i).concat(`${runningTotal}`).concat(operands.slice(i+2))
         }
-        tokens = [new Token("number", runningTotal)];
-        runningTotal = null;
+        tokens = [new Token("number", runningTotal.toString())];
+        runningTotal = 0;
     }
 
     document.querySelector(".buttons").addEventListener("click",(event)=>{
