@@ -81,9 +81,11 @@
                 }).filter(t => t.value.length);
                 break;
             case "=":
-                if (tokens[tokens.length - 1].type == "number" 
-                    && tokens[tokens.length - 1].value != "-") {
-                    evaluateTokens();
+                if (tokens.length) {
+                    if (tokens[tokens.length - 1].type == "number" 
+                        && tokens[tokens.length - 1].value != "-") {
+                        evaluateTokens();
+                    }   
                 }
                 break;
             
@@ -99,7 +101,7 @@
         let operators = tokens.filter(t => t.type == "symbol").map(t => t.value);
         console.log("operands: ",operands);
         console.log("operators: ", operators);
-        if (operands.length == 1) {
+        if (operands.length <= 1) {
             return;
         }
         for (let i; operators.length > 0; ) {
