@@ -44,10 +44,12 @@
     function handleSymbol(value){
         switch (value) {
             case "-":
-                if (!tokens.length || tokens[tokens.length - 1].type == "symbol") {
+                if (!tokens.length 
+                    || tokens[tokens.length - 1].type == "symbol") {
                     tokens.push(new Token("number", value));
                 } else {
-                    if (tokens[tokens.length - 1].type == "number" && tokens[tokens.length - 1].value != "-") {
+                    if (tokens[tokens.length - 1].type == "number" 
+                        && tokens[tokens.length - 1].value != "-") {
                         tokens.push(new Token("symbol", value));
                     }
                 }
@@ -79,7 +81,10 @@
                 }).filter(t => t.value.length);
                 break;
             case "=":
-                evaluateTokens();
+                if (tokens[tokens.length - 1].type == "number" 
+                    && tokens[tokens.length - 1].value != "-") {
+                    evaluateTokens();
+                }
                 break;
             
         }
@@ -94,8 +99,10 @@
         let operators = tokens.filter(t => t.type == "symbol").map(t => t.value);
         console.log("operands: ",operands);
         console.log("operators: ", operators);
-        
-        for (let i; operators.length>0; ) {
+        if (operands.length == 1) {
+            return;
+        }
+        for (let i; operators.length > 0; ) {
             if (operators.includes("×") || operators.includes("÷")) {
                 i = operators.findIndex(op => op === "×" || op === "÷")
             } else if (operators.includes("+") || operators.includes("-")) {
