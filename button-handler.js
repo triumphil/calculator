@@ -97,6 +97,7 @@
     }
 
     function evaluateTokens() {
+        console.log("tokens to evaluate: ",tokens);
         let operands = tokens.filter(t => t.type == "number").map(t => t.value);
         let operators = tokens.filter(t => t.type == "symbol").map(t => t.value);
         console.log("operands: ",operands);
