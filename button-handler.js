@@ -121,6 +121,9 @@
     }
 
     document.querySelector(".buttons").addEventListener("click",(event)=>{
-        handleButtonClick(event.target.innerText)
+        // Handles cases where a click targets the whole section / row
+        if (event.target.localName == "button") {
+            handleButtonClick(event.target.innerText)
+        }
     });
 })();
